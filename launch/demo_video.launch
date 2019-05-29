@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <launch>
-    <arg name="video" default="$(find tfpose_ros)/etcs/dance.mp4" />
+    <!--arg name="video" default="$(find tfpose_ros)/etcs/dance.mp4" /-->
+    <arg name="video" default="/dev/video0" />
     <arg name="video_width" default="1280" />
     <arg name="video_height" default="720" />
 
