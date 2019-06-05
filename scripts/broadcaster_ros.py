@@ -21,7 +21,8 @@ def humans_to_msg(humans):
 
     for human in humans:
         person = Person()
-
+        # sjw
+        person.person_id = humans.index(human)
         for k in human.body_parts:
             body_part = human.body_parts[k]
 
@@ -38,6 +39,8 @@ def humans_to_msg(humans):
 
 def callback_image(data):
     # et = time.time()
+    rate = rospy.Rate(5)
+
     try:
         cv_image = cv_bridge.imgmsg_to_cv2(data, "bgr8")
     except CvBridgeError as e:
@@ -59,6 +62,7 @@ def callback_image(data):
     msg.header = data.header
 
     pub_pose.publish(msg)
+    rate.sleep()
 
 
 if __name__ == '__main__':
@@ -93,6 +97,8 @@ if __name__ == '__main__':
     rospy.Subscriber(image_topic, Image, callback_image, queue_size=1, buff_size=2**24)
     pub_pose = rospy.Publisher('~pose', Persons, queue_size=1)
 
+
     rospy.loginfo('start+')
     rospy.spin()
+
     rospy.loginfo('finished')
