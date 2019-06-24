@@ -12,9 +12,11 @@ from tf_pose import common
 from tf_pose.common import CocoPart
 from tf_pose.tensblur.smoother import Smoother
 
+print('tensoflow version:', tf.__version__)
 try:
     from tf_pose.pafprocess import pafprocess
-except ModuleNotFoundError as e:
+# except ModuleNotFoundError as e:
+except ImportError as e:
     print(e)
     print('you need to build c++ library for pafprocess. See : https://github.com/ildoonet/tf-pose-estimation/tree/master/tf_pose/pafprocess')
     exit(-1)
