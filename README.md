@@ -153,18 +153,16 @@ pip2库版本见 [pip2_list.txt](./pip2_list.txt) <br>
 ROS下只使用python2和pip2
 
 ### 一些较难安装的库参考
-scipy: https://blog.csdn.net/whitesilence/article/details/70338056
-numba: https://blog.csdn.net/m0_37167788/article/details/90898236
+scipy: https://blog.csdn.net/whitesilence/article/details/70338056 <br>
+numba: https://blog.csdn.net/m0_37167788/article/details/90898236 <br>
 backports.functools_lru_cache: https://pypi.org/project/backports.functools_lru_cache/1.0.1/
 ## Install tensorflow
 教程：https://blog.csdn.net/zhangziju/article/details/85252474
 
-使用二进制直接安装GPU版本即可，即
-
+使用二进制直接安装GPU版本即可，即 
 `
 $: pip install --extra-index-url https://developer.download.nvidia.com/compute/redist/jp33 tensorflow-gpu
 `
-
 当前为tensorflow 1.9
 
 ## Install ROS
@@ -180,9 +178,7 @@ TX2内存空间不够用，需要交换空间
 ## How to use
 1 使用前开启超频模式:
 `./jetson_clocks.sh`
-
 2 `roslaunch tfpose_ros realsense_video.launch `
-
 ## 其他
 
 ### TX2 GPU使用情况查看工具
