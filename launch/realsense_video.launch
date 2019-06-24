@@ -54,8 +54,8 @@
         <param name="source2" value="/pose_estimator_vis/output,0,360,640,360" />
     </node>
 
-    <include file="$(find realsense2_camera)/launch/rs_rgbd.launch">
-        <arg name="camera" value="camera" />
+    <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+        <!-- arg name="camera" value="camera" /-->
         <!-- means video device 0, /dev/video0 -->
         <!--arg name="video_stream_provider" value="$(arg video)" /-->
         <!-- throttling the querying of frames to -->
