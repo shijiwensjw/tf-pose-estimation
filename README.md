@@ -48,6 +48,10 @@ Build c++ library for post processing. See : https://github.com/ildoonet/tf-pose
 $ cd tf_pose/pafprocess
 $ swig -python -c++ pafprocess.i && python3 setup.py build_ext --inplace
 ```
+对于在ROS下使用c++ library情况下，python3改为python2
+```
+$ swig -python -c++ pafprocess.i && python2 setup.py build_ext --inplace
+```
 
 ### Package Install
 
@@ -136,3 +140,39 @@ See : [etcs/training.md](./etcs/training.md)
 ## References
 
 See : [etcs/reference.md](./etcs/reference.md)
+
+# Install in TX2
+## 刷机
+教程：https://blog.csdn.net/DeepWolf/article/details/88640937 <br>
+使用的是Jetpack 3.3 <br>
+对应的CUDA：9.0， cudnn：7
+
+## 配置此工程需要的依赖
+pip2库版本见 [pip2_list.txt](./pip2_list.txt) <br>
+ROS下只使用python2和pip2
+
+### 一些较难安装的库参考
+scipy
+numba
+
+## Install tensorflow
+教程：https://blog.csdn.net/zhangziju/article/details/85252474
+使用二进制直接安装GPU版本即可，即
+`
+$: pip install --extra-index-url https://developer.download.nvidia.com/compute/redist/jp33 tensorflow-gpu
+`
+当前为tensorflow 1.9
+
+## Install ROS
+教程：
+## Install realsense D435
+教程：
+## 分配交换空间
+TX2内存空间不够用，需要交换空间
+教程：https://cloud.tencent.com/developer/article/1342505
+## 其他
+### 使用前开启超频模式
+`./jetson_clocks.sh`
+### TX2 GPU使用情况查看工具
+
+
