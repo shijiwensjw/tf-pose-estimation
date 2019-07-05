@@ -6,19 +6,12 @@ from std_msgs.msg import Int32
 from sensor_msgs.msg import Image
 from tfpose_ros.msg import Persons, Person, BodyPartElm
 
-# actions = ['nothing', 'stop', 'come on', 'sit down', 'stand up']
-
-#def action_publisher(action_string):
-#    pub = rospy.Publisher('/action_recognize', String, queue_size=10)
-#    pub.publish(action_string)
-
 def action_publisher(action_id):
     pub = rospy.Publisher('/action_recognize', Int32, queue_size=10)
     pub.publish(action_id)
         # rate.sleep()
 
 def action(human, n):
-    # print(human.person_id)
 
     RShoulder = BodyPartElm()
     RElbow = BodyPartElm()
@@ -78,12 +71,7 @@ def action(human, n):
             LHip.y = part.y
             LHip.confidence = part.confidence
 
-    #print('RShoulder', RShoulder)
-
-    #print('RElbow', RElbow)
-    #print('RWrist', RWrist)
-
-    threshold = 0.3
+    threshold = 0.2
     #calculation
     # length of the big arm
     R_big_arm_len = np.sqrt((RShoulder.x-RElbow.x)**2 + (RShoulder.y-RElbow.y)**2)
@@ -95,39 +83,42 @@ def action(human, n):
     L_small_arm_ylen = abs(LWrist.y-LElbow.y)
 
     # zero pose: Arm dropping
-    R_arm_drop = abs(RWrist.y - RHip.y) < 0.2*R_small_arm_ylen and RWrist.confidence > threshold and RHip.confidence > threshold
-    L_arm_drop = abs(LWrist.y - LHip.y) < 0.2*L_small_arm_ylen and LWrist.confidence > threshold and LHip.confidence > threshold
+    R_arm_drop = abs(RWrist.y - RHip.y) < 0.5*R_big_arm_len and RWrist.confidence > threshold and RHip.confidence > threshold
+    L_arm_drop = abs(LWrist.y - LHip.y) < 0.5*L_big_arm_len and LWrist.confidence > threshold and LHip.confidence > threshold
 
     # body length
     body_length = int(abs(Neck.y - LHip.y)*1000)
 
     # Action recognize
     if RWrist.y < RShoulder.y and L_arm_drop and (RWrist.confidence > threshold and RShoulder.confidence > threshold):
+    # if RWrist.y < RShoulder.y and (RWrist.confidence > threshold and RShoulder.confidence > threshold):
         action_str = 'come on'
 	action_id = 1
     elif LWrist.y < LShoulder.y and R_arm_drop and (LWrist.confidence > threshold and LShoulder.confidence > threshold):
         action_str = 'back'
         action_id = 2
 
-    elif R_small_arm_ylen < R_big_arm_len/3 and L_arm_drop and (RWrist.confidence > threshold and RShoulder.confidence > threshold and RElbow.confidence > threshold):
+    elif R_small_arm_ylen < R_big_arm_len/2 and L_arm_drop and (RWrist.confidence > threshold and RShoulder.confidence > threshold and RElbow.confidence > threshold) and RWrist.y > RShoulder.y:
         action_str = 'stand up'
 	action_id = 3
 
-    elif L_small_arm_ylen < L_big_arm_len/3 and R_arm_drop and (LWrist.confidence > threshold and LShoulder.confidence > threshold and LElbow.confidence > threshold):
+    elif L_small_arm_ylen < L_big_arm_len/2 and R_arm_drop and (LWrist.confidence > threshold and LShoulder.confidence > threshold and LElbow.confidence > threshold) and LWrist.y > LShoulder.y:
         action_str = 'sit down'
 	action_id = 4
 
-    elif R_small_arm_ylen < R_big_arm_len/3 and L_small_arm_ylen < L_big_arm_len/3 \
+    elif R_small_arm_ylen < R_big_arm_len/2 and L_small_arm_ylen < L_big_arm_len/2 \
         and (RWrist.confidence > threshold and RShoulder.confidence > threshold and RElbow.confidence > threshold) \
-        and (LWrist.confidence > threshold and LShoulder.confidence > threshold and LElbow.confidence > threshold):
+        and (LWrist.confidence > threshold and LShoulder.confidence > threshold and LElbow.confidence > threshold) \
+        and RWrist.y > RShoulder.y and LWrist.y > LShoulder.y:
         action_str = 'stop'
 	action_id = 5
-    # calibration specific person
-    elif RWrist.y < RShoulder.y and LWrist.y < LShoulder.y \
-        and RWrist.confidence > threshold and RShoulder.confidence > threshold \
-        and LWrist.confidence > threshold and LShoulder.confidence > threshold:
-    	action_str = 'calibration'
-        action_id = 100
+    elif abs(RWrist.y-RShoulder.y) < 0.2*R_big_arm_len and abs(RElbow.y-RShoulder.y) < 0.2*R_big_arm_len and R_small_arm_ylen < R_big_arm_len/2:
+	action_str = 'go right'
+	action_id = 6 
+    elif abs(LWrist.y-LShoulder.y) < 0.2*L_big_arm_len and abs(LElbow.y-LShoulder.y) < 0.2*L_big_arm_len and L_small_arm_ylen < L_big_arm_len/2:
+	action_str = 'go left'
+	action_id = 7
+
     else:
         action_str = 'do nothing'
 	action_id = 0
@@ -148,14 +139,16 @@ def callback(Persons):
         rospy.loginfo('No Body'+' id:'+str(action_id))
     else:
     	print('person number: '+str(len(Persons.persons)))
-        body_len_list = []
-        if continue_numOfaction > 2:
-            action_publisher(action_id)
-            print('='*40 + action_str)
+	if len(Persons.persons) > 1:
+	    rospy.loginfo('More than one person') 
+        #body_len_list = []
+        #if continue_numOfaction > 1:
+        #    action_publisher(action_id)
+        #    print('='*40 + action_str)
 
         for human in Persons.persons:
             action_id, action_str, body_length = action(human, 0)
-            body_len_list.append(body_length)
+            #body_len_list.append(body_length)
 	    # mark the action person
             print(action_str+' id:'+str(action_id))
             #global actor_id
@@ -167,14 +160,18 @@ def callback(Persons):
             global action_temp
             global continue_numOfaction
 
-            #if action_id == action_temp:
-            if action_id == action_temp and body_length == max(body_len_list):
+            if action_id == action_temp:
+            #if action_id == action_temp and body_length > 300 :
                 continue_numOfaction += 1
             else:
                 action_temp = action_id
                 continue_numOfaction = 0
-	    print('body_len_list:', body_len_list)
+
+	    if continue_numOfaction > 0:
+	        action_publisher(action_id)
+	        print('='*40 + action_str)
 	    print('body_length:',body_length)
+		
 
 def tfpose_listener():
 
