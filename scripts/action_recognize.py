@@ -31,12 +31,11 @@ def action(human, n):
     Neck = BodyPartElm()
 
     for part in human.body_part:
-	if part.part_id == 1:
+        if part.part_id == 1:
 	    Neck.part_id = part.part_id
-	    Neck.x = part.x
-	    Neck.y = part.y
-	    Neck.confidence = part.confidence
-        # body right
+            Neck.x = part.x
+            Neck.y = part.y
+            Neck.confidence = part.confidence
         if part.part_id == 2:
             RShoulder.part_id = part.part_id
             RShoulder.x = part.x
@@ -122,9 +121,9 @@ def action(human, n):
 	action_id = 5
     # calibration specific person
     elif RWrist.y < RShoulder.y and LWrist.y < LShoulder.y \
-and RWrist.confidence > threshold and RShoulder.confidence > threshold \
-and LWrist.confidence > threshold and LShoulder.confidence > threshold:
-	action_str = 'calibration'
+        and RWrist.confidence > threshold and RShoulder.confidence > threshold \
+        and LWrist.confidence > threshold and LShoulder.confidence > threshold:
+    	action_str = 'calibration'
         action_id = 100
     else:
         action_str = 'do nothing'
@@ -148,10 +147,10 @@ def callback(Persons):
             action_id, action_str = action(human, 0)
 	    # mark the action person
             print(action_str+' id:'+str(action_id) + ' current human_id:'+str(Persons.persons.index(human)))
-	    global actor_id
-	    if action_id == 100:
-	        # actor_id = human.person_id
-	        actor_id = Persons.persons.index(human)
+            global actor_id
+            if action_id == 100:
+                # actor_id = human.person_id
+                actor_id = Persons.persons.index(human)
 
             # Robustness
             global action_temp
