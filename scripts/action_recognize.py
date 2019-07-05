@@ -32,7 +32,7 @@ def action(human, n):
 
     for part in human.body_part:
         if part.part_id == 1:
-	    Neck.part_id = part.part_id
+            Neck.part_id = part.part_id
             Neck.x = part.x
             Neck.y = part.y
             Neck.confidence = part.confidence
@@ -78,10 +78,10 @@ def action(human, n):
             LHip.y = part.y
             LHip.confidence = part.confidence
 
-    print('RShoulder', RShoulder)
+    #print('RShoulder', RShoulder)
 
-    print('RElbow', RElbow)
-    print('RWrist', RWrist)
+    #print('RElbow', RElbow)
+    #print('RWrist', RWrist)
 
     threshold = 0.3
     #calculation
@@ -97,6 +97,9 @@ def action(human, n):
     # zero pose: Arm dropping
     R_arm_drop = abs(RWrist.y - RHip.y) < 0.2*R_small_arm_ylen and RWrist.confidence > threshold and RHip.confidence > threshold
     L_arm_drop = abs(LWrist.y - LHip.y) < 0.2*L_small_arm_ylen and LWrist.confidence > threshold and LHip.confidence > threshold
+
+    # body length
+    body_length = int(abs(Neck.y - LHip.y)*1000)
 
     # Action recognize
     if RWrist.y < RShoulder.y and L_arm_drop and (RWrist.confidence > threshold and RShoulder.confidence > threshold):
@@ -131,39 +134,47 @@ def action(human, n):
 
     # print(action_str+' id:'+str(action_id) + ' human_id:'+str(''))
 
-    return action_id, action_str
+    return action_id, action_str, body_length
 
 def callback(Persons):
     #rospy.loginfo(rospy.get_caller_id() + "I heard %s", data)
     #data = data()
+    global action_id
+    global action_str
     if(Persons.persons == []):
 	# no body
 	action_id = 0
         action_publisher(action_id)
         rospy.loginfo('No Body'+' id:'+str(action_id))
     else:
-	print('person number: '+str(len(Persons.persons)))
+    	print('person number: '+str(len(Persons.persons)))
+        body_len_list = []
+        if continue_numOfaction > 2:
+            action_publisher(action_id)
+            print('='*40 + action_str)
+
         for human in Persons.persons:
-            action_id, action_str = action(human, 0)
+            action_id, action_str, body_length = action(human, 0)
+            body_len_list.append(body_length)
 	    # mark the action person
-            print(action_str+' id:'+str(action_id) + ' current human_id:'+str(Persons.persons.index(human)))
-            global actor_id
-            if action_id == 100:
+            print(action_str+' id:'+str(action_id))
+            #global actor_id
+            #if action_id == 100:
                 # actor_id = human.person_id
-                actor_id = Persons.persons.index(human)
+            #    actor_id = Persons.persons.index(human)
 
             # Robustness
             global action_temp
             global continue_numOfaction
 
-            if action_id == action_temp and actor_id == Persons.persons.index(human):
+            #if action_id == action_temp:
+            if action_id == action_temp and body_length == max(body_len_list):
                 continue_numOfaction += 1
             else:
                 action_temp = action_id
                 continue_numOfaction = 0
-            if continue_numOfaction > 1:
-                action_publisher(action_id)
-		print('='*20 + action_str + '='*5+'command person id:' + str(actor_id))
+	    print('body_len_list:', body_len_list)
+	    print('body_length:',body_length)
 
 def tfpose_listener():
 
@@ -177,7 +188,10 @@ def tfpose_listener():
 if __name__ == '__main__':
     global action_temp
     global continue_numOfaction
+    global action_id
+    global action_str
     action_temp = 0
     continue_numOfaction = 0
-    actor_id = 0
+    action_id = 0
+    action_str = ''
     tfpose_listener()
