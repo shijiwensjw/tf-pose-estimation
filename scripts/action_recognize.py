@@ -75,11 +75,11 @@ def action(human, n):
     #calculation
     # length of the big arm
     R_big_arm_len = np.sqrt((RShoulder.x-RElbow.x)**2 + (RShoulder.y-RElbow.y)**2)
-    # R_small_arm_len = np.sqrt((RWrist.x-RElbow.x)**2 + (RWrist.y-RElbow.y)**2)
+    R_small_arm_len = np.sqrt((RWrist.x-RElbow.x)**2 + (RWrist.y-RElbow.y)**2)
     R_small_arm_ylen = abs(RWrist.y-RElbow.y)
 
     L_big_arm_len = np.sqrt((LShoulder.x-LElbow.x)**2 + (LShoulder.y-LElbow.y)**2)
-    # L_small_arm_len = np.sqrt((LWrist.x-LElbow.x)**2 + (LWrist.y-LElbow.y)**2)
+    L_small_arm_len = np.sqrt((LWrist.x-LElbow.x)**2 + (LWrist.y-LElbow.y)**2)
     L_small_arm_ylen = abs(LWrist.y-LElbow.y)
 
     # zero pose: Arm dropping
@@ -98,24 +98,26 @@ def action(human, n):
         action_str = 'back'
         action_id = 2
 
-    elif R_small_arm_ylen < R_big_arm_len/2 and L_arm_drop and (RWrist.confidence > threshold and RShoulder.confidence > threshold and RElbow.confidence > threshold) and RWrist.y > RShoulder.y:
+    #elif R_small_arm_ylen < R_big_arm_len/2 and L_arm_drop and (RWrist.confidence > threshold and RShoulder.confidence > threshold and RElbow.confidence > threshold) and RWrist.y > RShoulder.y:
+    elif R_small_arm_len < R_big_arm_len*0.4 and L_arm_drop and (RWrist.confidence > threshold and RShoulder.confidence > threshold and RElbow.confidence > threshold) and RWrist.y > RShoulder.y:
         action_str = 'stand up'
 	action_id = 3
 
-    elif L_small_arm_ylen < L_big_arm_len/2 and R_arm_drop and (LWrist.confidence > threshold and LShoulder.confidence > threshold and LElbow.confidence > threshold) and LWrist.y > LShoulder.y:
+    #elif L_small_arm_ylen < L_big_arm_len/2 and R_arm_drop and (LWrist.confidence > threshold and LShoulder.confidence > threshold and LElbow.confidence > threshold) and LWrist.y > LShoulder.y:
+    elif L_small_arm_len < L_big_arm_len*0.4 and R_arm_drop and (LWrist.confidence > threshold and LShoulder.confidence > threshold and LElbow.confidence > threshold) and LWrist.y > LShoulder.y:
         action_str = 'sit down'
 	action_id = 4
 
-    elif R_small_arm_ylen < R_big_arm_len/2 and L_small_arm_ylen < L_big_arm_len/2 \
+    elif R_small_arm_ylen < R_big_arm_len*0.4 and L_small_arm_ylen < L_big_arm_len*0.4 \
         and (RWrist.confidence > threshold and RShoulder.confidence > threshold and RElbow.confidence > threshold) \
         and (LWrist.confidence > threshold and LShoulder.confidence > threshold and LElbow.confidence > threshold) \
         and RWrist.y > RShoulder.y and LWrist.y > LShoulder.y:
         action_str = 'stop'
 	action_id = 5
-    elif abs(RWrist.y-RShoulder.y) < 0.2*R_big_arm_len and abs(RElbow.y-RShoulder.y) < 0.2*R_big_arm_len and R_small_arm_ylen < R_big_arm_len/2:
+    elif abs(RElbow.y-RShoulder.y) < 0.5*R_big_arm_len and abs(RElbow.y-RWrist.y) < 0.5*R_big_arm_len and RWrist.y > RShoulder.y and L_arm_drop:
 	action_str = 'go right'
 	action_id = 6 
-    elif abs(LWrist.y-LShoulder.y) < 0.2*L_big_arm_len and abs(LElbow.y-LShoulder.y) < 0.2*L_big_arm_len and L_small_arm_ylen < L_big_arm_len/2:
+    elif abs(LElbow.y-LShoulder.y) < 0.5*L_big_arm_len and abs(LElbow.y-LWrist.y) < 0.5*L_big_arm_len and LWrist.y > LShoulder.y and R_arm_drop:
 	action_str = 'go left'
 	action_id = 7
 
@@ -167,7 +169,7 @@ def callback(Persons):
                 action_temp = action_id
                 continue_numOfaction = 0
 
-	    if continue_numOfaction > 0:
+	    if continue_numOfaction > 1:
 	        action_publisher(action_id)
 	        print('='*40 + action_str)
 	    print('body_length:',body_length)
