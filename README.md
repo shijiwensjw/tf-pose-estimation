@@ -11,7 +11,7 @@
 pip2库版本见 [pip2_list.txt](./pip2_list.txt) <br>
 ROS下只使用python2和pip2
 
-### 一些较难安装的库参考
+### 一些较难安装的库参考(遇到问题时再考虑，无需安装)
 scipy: https://blog.csdn.net/whitesilence/article/details/70338056 <br>
 numba: https://blog.csdn.net/m0_37167788/article/details/90898236 <br>
 backports.functools_lru_cache: https://pypi.org/project/backports.functools_lru_cache/1.0.1/
@@ -37,9 +37,13 @@ TX2内存空间不够用，需要交换空间 <br>
 教程：https://cloud.tencent.com/developer/article/1342505
 
 ## How to use
-1. 使用前开启超频模式:
+1. 使用前开启超频模式:（无需执行）
 `./jetson_clocks.sh` <br>
-2. `roslaunch tfpose_ros realsense_video.launch `
+2. 
+**有图形界面显示:** <br>
+`roslaunch tfpose_ros robot_vision_start.launch `
+**无图像显示** <br>
+`roslaunch tfpose_ros robot_noview.launch`
 ## 其他
 
 ### 安装teamviewer
