@@ -41,7 +41,7 @@ TX2内存空间不够用，需要交换空间 <br>
 `./jetson_clocks.sh` <br>
 2. 
 **有图形界面显示:** <br>
-`roslaunch tfpose_ros robot_vision_start.launch `
+`roslaunch tfpose_ros robot_vision_start.launch ` <br>
 **无图像显示** <br>
 `roslaunch tfpose_ros robot_noview.launch`
 ## 其他
