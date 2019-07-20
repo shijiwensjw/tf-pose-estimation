@@ -27,10 +27,24 @@ $: pip install --extra-index-url https://developer.download.nvidia.com/compute/r
 ## Install ROS
 教程： https://blog.csdn.net/Kamfai_Row/article/details/89409386#ROS_Kinetic__154
 
-## Install realsense D435
-教程： http://blog.leanote.com/post/bsw_is_u@163.com/TX2%E5%AE%89%E8%A3%85intel-realsense-D435%E5%8F%8AROS-%E4%B8%8BD435%E7%9A%84%E5%90%AF%E5%8A%A8
+## Install realsense D435 driver
+教程： http://blog.leanote.com/post/bsw_is_u@163.com/TX2%E5%AE%89%E8%A3%85intel-realsense-D435%E5%8F%8AROS-%E4%B8%8BD435%E7%9A%84%E5%90%AF%E5%8A%A8 <br>
+realsense ros的包放到下一步中的`catkin_ws/src`里 <br>
 
 **如果不能使用，则试下其他版本，如<realsense ros: v2.2.5, librealsense: v2.22.0>**
+
+## 编译项目工程
+
+1 创建工作空间 `mkdir -p catkin_ws/src` <br>
+2 切换到工作目录: `cd catkin_ws/src` <br>
+3 下载工程: <br>
+`git clone git@github.com:shijiwensjw/tf-pose-estimation.git`,此工程checkout到tx2分支下<br>
+`git clone git@github.com:shijiwensjw/udpServer.git` <br>
+还有realsense相机驱动的ros程序一样放到src目录下 <br>
+4 编译工程 <br>
+安装库:`sudo apt-get install libpcap-dev` <br>
+在`catkin_ws`目录下,执行`catkin_make -DCMAKE_BUILD_TYPE=Release` <br>
+
 
 ## 分配交换空间
 TX2内存空间不够用，需要交换空间 <br>
